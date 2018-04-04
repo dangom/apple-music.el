@@ -105,10 +105,10 @@ so we change them to itms."
   "Use Helm to select a music match and play it on iTunes."
   (interactive)
   (let* ((json-file (am/get-apple-results-from
-                     (read-string "Search for a song:")))
+                     (read-string "Search Apple Music for: ")))
          (results (json-read-file json-file))
-         (track-and-links (am/track-link-assoc (cdadr results)))
-         (track (completing-read "Choose a song:" (mapcar 'car track-and-links))))
+         (track-and-links (am/trackname-tracklink-assoc (cdadr results)))
+         (track (completing-read "Choose an entry: " (mapcar 'car track-and-links))))
     (am/open-song-on-itunes (cdr (assoc track track-and-links)))))
 
 (provide 'apple-music)
