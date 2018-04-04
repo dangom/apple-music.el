@@ -73,7 +73,14 @@ This function taken from https://gist.github.com/jrblevin/cacbaf7b34b042bb308b"
   "From a list of association lists, grab the trackName and trackViewUrl
 and combine them in a new association list."
   (mapcar #'(lambda (x) (cons
-                         (cdr (assoc 'trackName x))
+                         (concat
+                          (when (cdr (assoc 'kind x))
+                            (concat
+                             (capitalize (cdr (assoc 'kind x)))
+                             ": "))
+                          (cdr (assoc 'trackName x))
+                          " by "
+                          (cdr (assoc 'artistName x)))
                          (cdr (assoc 'trackViewUrl x))))
           results))
 
