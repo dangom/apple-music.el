@@ -8,11 +8,12 @@ Because it relies on Applescript to call up iTunes, I assume this library will o
 
 #+BEGIN_SRC emacs-lisp
 (use-package 'apple-music
+  ;; Set this to the country of your apple store region. E.g. "us", "de"
   :config (setq am-apple-store-region "nl"))
 #+END_SRC
 
 * Usage
-  Call `am/search-apple-music`, or assign it to your favorite keybinding to initiate the search. Note that this library relies on the iTunes Search API, so if you perform more than 20 searches per minute your IP will probably be blocked.
+  Call =am/search-apple-music=, or assign it to your favorite keybinding to initiate the search. Note that this library relies on the iTunes Search API, so if you perform more than 20 searches per minute your IP will probably be blocked.
 
 * TO DOs
 
