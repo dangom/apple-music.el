@@ -1,0 +1,21 @@
+#+TITLE: Apple-Music.el
+
+This small library implements apple music search from within Emacs. After searching, it opens the selection in iTunes. To use it, add the following to your init file.
+
+* Installation
+
+Because it relies on Applescript to call up iTunes, I assume this library will only work for MacOS users.
+
+#+BEGIN_SRC emacs-lisp
+(use-package 'apple-music
+  :config (setq am-apple-store-region "nl"))
+#+END_SRC
+
+* Usage
+  Call `am/search-apple-music`, or assign it to your favorite keybinding to initiate the search. Note that this library relies on the iTunes Search API, so if you perform more than 20 searches per minute your IP will probably be blocked.
+
+* TO DOs
+
+  - Automatically start playing the selection :: Quite hard actually, as a bug in iTunes means that the selected text is not considered to be selected until manually clicked upon. See [[https://stackoverflow.com/questions/49647648/applescript-play-music-from-itunes-url][this issue over at SO.]]
+  - Suggest previously played songs :: In the same spirit that Helm-mini offers both a list of buffers and a list of recentf, this library could cache previously chosen songs and offer them again.
+  - Default to selected region or previous entry :: If a text is selected, use it as the default search term. If not, use a previous entry.
