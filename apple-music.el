@@ -101,6 +101,7 @@ so we change them to itms."
             (am/http-to-itms song-url)))))
 
 
+;;;###autoload
 (defun am/search-apple-music ()
   "Use Helm to select a music match and play it on iTunes."
   (interactive)
