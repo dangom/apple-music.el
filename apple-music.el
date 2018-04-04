@@ -4,8 +4,9 @@
 
 ;; Author: Daniel Gomez <d.gomez at posteo dot org>
 ;; Created: 2018-04-03
+;; URL: https://github.com/dangom/apple-music.el
 ;; Version: 0.01
-;; Keywords: music, itunes, apple
+;; Keywords: multimedia, convenience
 
 ;; This file is not part of GNU Emacs.
 
@@ -24,21 +25,23 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Commentary:
+
 ;; Please see "Readme.org" for detail introductions.
 
 ;;; Code:
 (require 'json)
 
-(defvar am-apple-store-region "nl"
+(defvar apple-music-store-region "nl"
   "Country of your Apple account.")
 
 ;; TODO Clean search-term so that spaces get converted to + in the address, and
 ;; TODO search-term gets converetd to _ in the filename.
 ;; TODO Don't redownload file if it already exists.
-(defun am/get-apple-results-from (search-term)
+(defun apple-music-get-apple-results-from (search-term)
   "Search the apple store for a given SEARCH-TERM"
   (let ((address (concat "https://itunes.apple.com/"
-                         am-apple-store-region
+                         apple-music-store-region
                          "/search?term="
                          (replace-regexp-in-string " " "+" search-term)))
         (filename (concat "/tmp/emacs-am-"
@@ -48,7 +51,7 @@
     filename))
 
 
-(defun am/applescript-quote-string (argument)
+(defun apple-music-applescript-quote-string (argument)
   "Quote a string for passing as a string to AppleScript.
 This function taken from https://gist.github.com/jrblevin/cacbaf7b34b042bb308b"
   (if (or (not argument) (string-equal argument ""))
@@ -69,7 +72,7 @@ This function taken from https://gist.github.com/jrblevin/cacbaf7b34b042bb308b"
         (concat "\"" result (substring argument start) "\"")))))
 
 
-(defun am/trackname-tracklink-assoc (results)
+(defun apple-music-trackname-tracklink-assoc (results)
   "From a list of association lists, grab the trackName and trackViewUrl
 and combine them in a new association list."
   (mapcar #'(lambda (x) (cons
@@ -85,33 +88,33 @@ and combine them in a new association list."
           results))
 
 
-(defun am/http-to-itms (link)
+(defun apple-music-http-to-itms (link)
   "Apple returns trackViewUrl as http links. We want to open them in iTunes,
 so we change them to itms."
   (replace-regexp-in-string "http" "itms" link nil 'literal))
 
 
-(defun am/open-song-on-itunes (song-url)
+(defun apple-music-open-song-on-itunes (song-url)
   "Calls applescript to activate iTunes and open the itms SONG-URL."
   (do-applescript
    (format "tell application \"iTunes\"
            open location %s
            end tell"
-           (am/applescript-quote-string
-            (am/http-to-itms song-url)))))
+           (apple-music-applescript-quote-string
+            (apple-music-http-to-itms song-url)))))
 
 
 ;;;###autoload
-(defun am/search-apple-music ()
+(defun apple-music-search ()
   "Use Helm to select a music match and play it on iTunes."
   (interactive)
-  (let* ((json-file (am/get-apple-results-from
+  (let* ((json-file (apple-music-get-apple-results-from
                      (read-string "Search Apple Music for: ")))
          (results (json-read-file json-file))
-         (track-and-links (am/trackname-tracklink-assoc (cdadr results)))
+         (track-and-links (apple-music-trackname-tracklink-assoc (cdadr results)))
          (track (completing-read "Choose an entry: " (mapcar 'car track-and-links))))
-    (am/open-song-on-itunes (cdr (assoc track track-and-links)))))
+    (apple-music-open-song-on-itunes (cdr (assoc track track-and-links)))))
 
 (provide 'apple-music)
 
-;; apple-music.el ends here
+;;; apple-music.el ends here
