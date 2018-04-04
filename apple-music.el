@@ -42,10 +42,9 @@
                          "/search?term="
                          (replace-regexp-in-string " " "+" search-term)))
         (filename (concat "/tmp/emacs-am-"
-                          (format "%s"
-                                  (random (expt 16 4)))
                           (replace-regexp-in-string " " "_" search-term) ".txt")))
-    (url-copy-file address filename)
+    (unless (file-exists-p filename)
+      (url-copy-file address filename))
     filename))
 
 
