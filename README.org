@@ -1,6 +1,6 @@
 #+TITLE: Apple-Music.el
 
-This small library implements apple music search from within Emacs. After searching, it opens the selection in iTunes. To use it, add the following to your init file.
+This small library implements apple music search from within Emacs. After searching, it opens the selection in iTunes.
 
 * Installation
 
@@ -20,3 +20,8 @@ Because it relies on Applescript to call up iTunes, I assume this library will o
   - Automatically start playing the selection :: Quite hard actually, as a bug in iTunes means that the selected text is not considered to be selected until manually clicked upon. See [[https://stackoverflow.com/questions/49647648/applescript-play-music-from-itunes-url][this issue over at SO.]]
   - Suggest previously played songs :: In the same spirit that Helm-mini offers both a list of buffers and a list of recentf, this library could cache previously chosen songs and offer them again.
   - Default to selected region or previous entry :: If a text is selected, use it as the default search term. If not, use a previous entry.
+  - Add support for searches in own library :: For example implementation in JS see https://github.com/mischah/itunes-remote
+  - Show current song in modeline :: If a song is playing, show it in the modeline. Plus points if clicking the modeline brings up music metadata.
+  - Improve UI :: For now completion read gives us "Kind: Title by Artist". Ideally we'd have a clearer interface, similar to what Org-Ref does for bib files.
+
+  No need to implement next or previous song, nor play/pause as the functionality is already present on any Mac keyboard and most other keyboards as well.

@@ -27,7 +27,7 @@
 
 ;;; Commentary:
 
-;; Please see "Readme.org" for detail introductions.
+;; Please see "Readme.org" for detailed introductions.
 
 ;;; Code:
 (require 'json)
@@ -99,6 +99,7 @@ so we change them to itms."
   (do-applescript
    (format "tell application \"iTunes\"
            open location %s
+           activate
            end tell"
            (apple-music-applescript-quote-string
             (apple-music-http-to-itms song-url)))))
