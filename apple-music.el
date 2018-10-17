@@ -72,9 +72,9 @@ This function taken from https://gist.github.com/jrblevin/cacbaf7b34b042bb308b"
         (concat "\"" result (substring argument start) "\"")))))
 
 
-(defun apple-music-trackname-tracklink-assoc (results)
-  "From a list of association lists, grab the trackName and trackViewUrl
-and combine them in a new association list."
+(defun apple-music-track-link-assoc (results)
+  "From a list of association lists, generate a track description and get the
+trackViewUrl and combine them in a new association list."
   (mapcar #'(lambda (x) (cons
                          (concat
                           (when (cdr (assoc 'kind x))
@@ -87,6 +87,22 @@ and combine them in a new association list."
                          (cdr (assoc 'trackViewUrl x))))
           results))
 
+(defun apple-music-track-name-assoc (results)
+  "From a list of association lists, generate a track description and get the
+trackName and combine them in a new association list."
+  (mapcar #'(lambda (x) (cons
+                         (concat
+                          (when (cdr (assoc 'kind x))
+                            (concat
+                             (capitalize (cdr (assoc 'kind x)))
+                             ": "))
+                          (cdr (assoc 'trackName x))
+                          " by "
+                          (cdr (assoc 'artistName x)))
+                         (cdr (assoc 'trackName x))))
+          results))
+
+
 
 (defun apple-music-http-to-itms (link)
   "Apple returns trackViewUrl as http links. We want to open them in iTunes,
@@ -94,15 +110,29 @@ so we change them to itms."
   (replace-regexp-in-string "http" "itms" link nil 'literal))
 
 
-(defun apple-music-open-song-on-itunes (song-url)
+(defun apple-music-open-song-on-itunes (song-url track-name)
   "Calls applescript to activate iTunes and open the itms SONG-URL."
   (do-applescript
    (format "tell application \"iTunes\"
-           open location %s
-           activate
-           end tell"
-           (apple-music-applescript-quote-string
-            (apple-music-http-to-itms song-url)))))
+                activate
+                open location %s
+                delay 2
+            end tell
+            tell application \"System Events\"
+                tell process \"iTunes\"
+                    set theRows to the rows of table 1 of UI element 1 of scroll area 1 of group 1 of group 1 of front window
+		                repeat with i from 1 to the number of theRows
+			                  set eachRow to item i of theRows
+			                  if exists group 2 of UI element 2 of eachRow then
+				                    if value of static text 1 of group 1 of group 2 of UI element 2 of eachRow is %s then
+					                      tell group 1 of UI element 2 of eachRow to click
+				                    end if
+			                  end if
+		                end repeat
+	              end tell
+            end tell"
+           (apple-music-applescript-quote-string (apple-music-http-to-itms song-url))
+           (apple-music-applescript-quote-string track-name))))
 
 
 ;;;###autoload
@@ -112,9 +142,14 @@ so we change them to itms."
   (let* ((json-file (apple-music-get-apple-results-from
                      (read-string "Search Apple Music for: ")))
          (results (json-read-file json-file))
-         (track-and-links (apple-music-trackname-tracklink-assoc (cdadr results)))
-         (track (completing-read "Choose an entry: " (mapcar 'car track-and-links))))
-    (apple-music-open-song-on-itunes (cdr (assoc track track-and-links)))))
+         (track-and-link
+          (apple-music-track-link-assoc (cdadr results)))
+         (track-and-name
+          (apple-music-track-name-assoc (cdadr results)))
+         (track (completing-read "Choose an entry: " (mapcar 'car track-and-link))))
+    (apple-music-open-song-on-itunes
+     (cdr (assoc track track-and-link))
+     (cdr (assoc track track-and-name)))))
 
 (provide 'apple-music)
 
