@@ -12,6 +12,8 @@ Because it relies on Applescript to call up iTunes, I assume this library will o
   :config (setq apple-music-store-region "nl"))
 #+END_SRC
 
+Note: iTunes has a bug in that searching for a song using the applescript API will highlight that search entry in iTunes but not select it. If it were selected, all we'd have to do is send a button press. Unfortunately, because the content is not selected we have to work around and read the elements of the UI. This requires extra accessibility permissions.
+
 * Usage
   Call =apple-music-search=, or assign it to your favorite keybinding to initiate the search. Note that this library relies on the iTunes Search API, so if you perform more than 20 searches per minute your IP will probably be blocked.
 
